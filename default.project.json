@@ -1,0 +1,10 @@
+{
+  "name": "RaydetectionMk2",
+  "tree": {
+    "$className": "DataModel",
+
+    "ReplicatedStorage":{
+      "$path": "src/RS"
+    }
+  }
+}
