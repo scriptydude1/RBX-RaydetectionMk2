@@ -22,6 +22,9 @@ function Raydetection._new(part)
     new.Length = 1
     new.RayParams = RaycastParams.new()
 
+    new._eCastEnded = Instance.new("BindableEvent")
+    new.CastEnded = new._eCastEnded.Event
+
     return new
 end
 function Raydetection.newDirectional(part, dir)
@@ -33,7 +36,9 @@ function Raydetection.newDirectional(part, dir)
         warn("Invalid direction when creating Raydetection.newDirectional")
     end
     new.RayDir = dir
-    
+
+    --Method that is called every frame in :StartCast()
+    --Mainly for raycasting
     function new:_Cast()
         
     end
@@ -44,6 +49,8 @@ end
 function Raydetection.newOmnidirectional(part)
     local new = Raydetection._new(part)
 
+    --Method that is called every frame in :StartCast()
+    --Mainly for raycasting
     function new:_Cast() --TODO
         
     end
