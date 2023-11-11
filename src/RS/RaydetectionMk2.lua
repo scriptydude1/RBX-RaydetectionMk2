@@ -1,4 +1,3 @@
---part.CFrame = part.CFrame * CFrame.new(0, 0, -5)
 local RunService = game:GetService("RunService")
 
 local Raydetection = {}
@@ -14,9 +13,9 @@ Raydetection.CastDirEnum = {
     ["Up"] = CFrame.new(0, 1, 0)
 
 }
-
+--Grabs the half of the size, makes it negative, and then fills it out with attachments from one to another end
 function Raydetection._fillAttach(part, volume)
-    --Grabs the half of the size, makes it negative, and then fills it out with attachments from one to another end
+    local attachments = {}
     for x = (part.Size.X / 2) * -1, part.Size.X / 2, volume do
         for y = (part.Size.Y / 2) * -1, part.Size.Y / 2, volume do
             for z = (part.Size.Z / 2) * -1, part.Size.Z / 2, volume do
@@ -24,9 +23,12 @@ function Raydetection._fillAttach(part, volume)
                 attachment.Name = "RD"
                 attachment.CFrame = CFrame.new(x, y, z)
                 attachment.Parent = part
+
+                table.insert(attachments, attachment)
             end
         end
     end
+    return attachments
 end
 --[[
     Constructor methods
@@ -36,7 +38,11 @@ function Raydetection._new(part)
     
     new.BasePart = part
     new.Length = 1
-    new.RayParams = RaycastParams.new()
+
+    local rayparams = RaycastParams.new()
+	rayparams.FilterDescendantsInstances = {part}
+	rayparams.FilterType = Enum.RaycastFilterType.Exclude
+	new.RayParams = rayparams
 
     new._eCastEnded = Instance.new("BindableEvent")
     new.CastEnded = new._eCastEnded.Event
@@ -47,7 +53,6 @@ function Raydetection.newDirectional(part, dir, attachVolume)
     local new = Raydetection._new(part)
 
     new.FromPart = part
-
     if Raydetection.CastDirEnum[dir] then
     else
         dir = "Front"
@@ -56,11 +61,20 @@ function Raydetection.newDirectional(part, dir, attachVolume)
     new.RayDir = Raydetection.CastDirEnum[dir]
 
     new.Attachments = Raydetection._fillAttach(new.BasePart, attachVolume)
-
     --Method that is called every frame in :StartCast()
     --Mainly for raycasting
     function new:_Cast()
+        local result
+        local lookVector = self.FromPart.CFrame * self.RayDir
+        for i, attachment in pairs(self.Attachments) do
+            local dir = Vector3.new(lookVector.X * self.Range, attachment.WorldCFrame.Position, lookVector.Z * self.Range)
+            local ray = workspace:Raycast(attachment.WorldCFrame.Position, dir, self.RayParams)
+            if ray.Instance then
+                result = ray
+            end
+        end
 
+        return result
     end
 
     return new
