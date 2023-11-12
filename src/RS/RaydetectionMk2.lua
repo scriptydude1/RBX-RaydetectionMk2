@@ -93,7 +93,7 @@ function Raydetection.newDirectional(part, dir, attachVolume)
                 yVector = attachment.WorldCFrame.Position.Y
             end
 
-            local dir = Vector3.new(lookVector.X, yVector, lookVector.Z)
+            local dir = Vector3.new(lookVector.X, lookVector.Y, lookVector.Z)
             local origin = attachment.WorldCFrame.Position
 
             local ray = workspace:Raycast(origin, dir, self.RayParams)
