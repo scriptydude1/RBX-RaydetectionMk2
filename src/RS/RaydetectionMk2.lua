@@ -22,12 +22,12 @@ Raydetection.__index = Raydetection
 
 --Enum of a part CFrame directions
 Raydetection.CastDirEnum = {
-    ["Front"] = -CFrame.new().LookVector,
-    ["Back"] = CFrame.new().LookVector,
-    ["Left"] = -CFrame.new().RightVector,
-    ["Right"] = CFrame.new().RightVector,
-    ["Down"] = -CFrame.new().UpVector,
-    ["Up"] = CFrame.new().UpVector
+    ["Front"] = Vector3.new(-1,0,0),
+    ["Back"] = Vector3.new(1,0,1),
+    ["Left"] = Vector3.new(0,0,-1),
+    ["Right"] = Vector3.new(0,0,1),
+    ["Down"] = -Vector3.new(0,-1,0),
+    ["Up"] = Vector3.new(0,1,0)
 
 }
 --Grabs the half of the size, makes it negative, and then fills it out with attachments from one to another end
