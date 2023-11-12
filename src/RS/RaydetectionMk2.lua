@@ -88,7 +88,12 @@ function Raydetection.newDirectional(part, dir, attachVolume)
         local lookVector = self.FromPart.Position * offset
 
         for i, attachment in pairs(self.Attachments) do
-            local dir = Vector3.new(lookVector.X, attachment.WorldCFrame.Position, lookVector.Z)
+            local yVector = lookVector.Y
+            if self.RayDir.Y == 0 then
+                yVector = attachment.WorldCFrame.Position.Y
+            end
+
+            local dir = Vector3.new(lookVector.X, yVector, lookVector.Z)
             local origin = attachment.WorldCFrame.Position
 
             local ray = workspace:Raycast(origin, dir, self.RayParams)
