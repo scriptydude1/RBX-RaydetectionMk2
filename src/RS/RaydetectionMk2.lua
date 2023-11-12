@@ -1,33 +1,16 @@
 local RunService = game:GetService("RunService")
 
-local function visualRay(result, origin, dir)
-	--Credits to Ducky_akaDirt
-	local distance = (origin - result.Position).Magnitude
-	local p = Instance.new("Part")
-	p.Parent = workspace
-	p.Anchored = true
-	p.CanCollide = false
-	p.Color = Color3.new(1, 0, 0.0156863)
-	p.Transparency = 0.75
-	p.Size = Vector3.new(0.1, 0.1, distance)
-    p.CFrame = CFrame.lookAt(origin, result.Position)*CFrame.new(0, 0, -distance/2)
-	
-	task.delay(0.5, function()
-        p:Destroy()
-    end)
-end
-
 local Raydetection = {}
 Raydetection.__index = Raydetection
 
 --Enum of a part CFrame directions
 Raydetection.CastDirEnum = {
-    ["Front"] = CFrame.new().LookVector,
-    ["Back"] = -CFrame.new().LookVector,
-    ["Left"] = -CFrame.new().RightVector,
-    ["Right"] = CFrame.new().RightVector,
-    ["Down"] = -CFrame.new().UpVector,
-    ["Up"] = CFrame.new().UpVector
+    ["Front"] = CFrame.new(0, 0, -1),
+    ["Back"] = CFrame.new(0, 0, 1),
+    ["Left"] = CFrame.new(-1, 0, 0),
+    ["Right"] = CFrame.new(1, 0, 0),
+    ["Down"] = CFrame.new(0, -1, 0),
+    ["Up"] = CFrame.new(0, 1, 0)
 
 }
 --Grabs the half of the size, makes it negative, and then fills it out with attachments from one to another end
@@ -55,15 +38,14 @@ function Raydetection._new(part)
     
     new.BasePart = part
     new.Length = 1
-    new.Attachments = {}
 
     local rayparams = RaycastParams.new()
 	rayparams.FilterDescendantsInstances = {part}
 	rayparams.FilterType = Enum.RaycastFilterType.Exclude
 	new.RayParams = rayparams
 
-    new._eHit = Instance.new("BindableEvent")
-    new.Hit = new._eHit.Event
+    new._eCastEnded = Instance.new("BindableEvent")
+    new.CastEnded = new._eCastEnded.Event
 
     return new
 end
@@ -83,22 +65,11 @@ function Raydetection.newDirectional(part, dir, attachVolume)
     --Mainly for raycasting
     function new:_Cast()
         local result
-
-        local offset = self.RayDir * self.Length
-        local lookVector = self.FromPart.Position * offset
-
+        local lookVector = self.FromPart.CFrame * self.RayDir
         for i, attachment in pairs(self.Attachments) do
-            local yVector = lookVector.Y
-            if self.RayDir.Y == 0 then
-                yVector = attachment.WorldCFrame.Position.Y
-            end
-
-            local dir = Vector3.new(lookVector.X, lookVector.Y, lookVector.Z)
-            local origin = attachment.WorldCFrame.Position
-
-            local ray = workspace:Raycast(origin, dir, self.RayParams)
-            if ray then
-                visualRay(ray, origin, dir)
+            local dir = Vector3.new(lookVector.X * self.Range, attachment.WorldCFrame.Position, lookVector.Z * self.Range)
+            local ray = workspace:Raycast(attachment.WorldCFrame.Position, dir, self.RayParams)
+            if ray.Instance then
                 result = ray
             end
         end
@@ -122,28 +93,12 @@ function Raydetection.newOmnidirectional(part)
 end
 
 
-function Raydetection:StartCast(frames, cleanOnCast)
-    if not self["_Cast"] then error("_Cast method not found!") end
-
-    for i = frames, 0, -1 do
-        RunService.Heartbeat:Wait()
-        
-        local castResult = self:_Cast()
-        if castResult then
-            self._eHit:Fire(castResult)
-        end
-    end
-    if cleanOnCast then
-        self:Cleanup()
-    end
+function Raydetection:StartCast(frames)
+    
 end
 
 function Raydetection:Cleanup()
-    if #self.Attachments >= 1 then
-        for i, v in pairs(self.Attachments) do
-            v:Destroy()
-        end
-    end
+    
 end
 
 return Raydetection
