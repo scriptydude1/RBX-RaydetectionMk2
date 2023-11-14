@@ -27,7 +27,7 @@ Raydetection Instance **`Raydetection.newDirectional(Instance part, String dir, 
 
 Raydetection Instance **`Raydetection.newOmnidirectional(TODO)`**
 
-nil **`Raydetection:StartCast(Number frames, Bool cleanOnCast)`**
+nil **`Raydetection:StartCast(Number frames, Bool cleanOnCast)` ASYNC** 
 - Starts raycasting for set amount of frames. 
 - If cleanOnCast set to true, :Cleanup() method is automatically called on cast stop.
 

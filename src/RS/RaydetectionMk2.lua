@@ -132,18 +132,19 @@ end
 
 function Raydetection:StartCast(frames, cleanOnCast)
     if not self["_Cast"] then error("_Cast method not found!") end
-
-    for i = frames, 0, -1 do
-        RunService.Heartbeat:Wait()
-        
-        local castResult = self:_Cast()
-        if castResult then
-            self._eHit:Fire(castResult)
+    task.spawn(function()
+        for i = frames, 0, -1 do
+            RunService.Heartbeat:Wait()
+            
+            local castResult = self:_Cast()
+            if castResult then
+                self._eHit:Fire(castResult)
+            end
         end
-    end
-    if cleanOnCast then
-        self:Cleanup()
-    end
+        if cleanOnCast then
+            self:Cleanup()
+        end
+    end)
 end
 
 function Raydetection:Cleanup()
