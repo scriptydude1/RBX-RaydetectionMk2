@@ -4,6 +4,7 @@ My new and improved version of my old "Raydetection" module.  In development.
 
 Some may ask: *"Why this when you can do :GetPartsInPart?"* 
 Firstly, I like to reinvent the wheels. Secondly, this thing is sloow.
+(really recommend not to use it bcuz it's just a pile of my stuff that's comfortable to me. but hey if you like it ofc use it)
 
 ### Features:
 
