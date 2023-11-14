@@ -30,18 +30,31 @@ Raydetection.CastDirEnum = {
     ["Up"] = Vector3.new(0,1,0)
 
 }
+--optimizes attachment placement.
+local function isSided(x, y, z)
+    local side = false
+    x, y, z = math.abs(x), math.abs(y), math.abs(z)
+
+    if x == 2 or y == 2 or z == 2 then
+        side = true
+    end
+
+    return side
+end
 --Grabs the half of the size, makes it negative, and then fills it out with attachments from one to another end
 function Raydetection._fillAttach(part, volume)
     local attachments = {}
     for x = (part.Size.X / 2) * -1, part.Size.X / 2, volume do
         for y = (part.Size.Y / 2) * -1, part.Size.Y / 2, volume do
             for z = (part.Size.Z / 2) * -1, part.Size.Z / 2, volume do
-                local attachment = Instance.new("Attachment")
-                attachment.Name = "RD"
-                attachment.CFrame = CFrame.new(x, y, z)
-                attachment.Parent = part
+                if isSided(x,y,z) then
+                    local attachment = Instance.new("Attachment")
+                    attachment.Name = "RD"
+                    attachment.CFrame = CFrame.new(x, y, z)
+                    attachment.Parent = part
 
-                table.insert(attachments, attachment)
+                    table.insert(attachments, attachment)
+                end
             end
         end
     end
