@@ -35,6 +35,9 @@ nil **`Raydetection:StartCast(Number frames, Bool cleanOnCast)` ASYNC**
  nil **`Raydetection:Cleanup()`**
  - Clean's up all attachments made by instance.
 
+  nil **`Raydetection:SetFromPart(Instance part)`**
+ - Sets up a FromPart and CastDirEnum
+
 ---
 **Properties**
 
@@ -47,6 +50,6 @@ nil **`Raydetection:StartCast(Number frames, Bool cleanOnCast)` ASYNC**
  
  *Directional only:*
  - `Attachments` [table, Instance] - Table of all attachments made by this Raydetection Instance
- - `FromPart` [Instance] - Defaulted to BasePart. Directions will be calculated using THIS part.
+ - `FromPart` [Instance] - Defaulted to BasePart. Directions will be calculated using CFrame of THIS part. To change it, please use :SetFromPart.
  - `RayDir` [Vector3] - Direction of a raycast.
 

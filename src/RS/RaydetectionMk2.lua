@@ -86,13 +86,14 @@ end
 function Raydetection.newDirectional(part, dir, attachVolume)
     local new = Raydetection._new(part)
 
-    new.FromPart = part
     if Raydetection.CastDirEnum[dir] then
     else
         dir = "Front"
         warn("Invalid direction when creating Raydetection.newDirectional. Switching to Front")
     end
-    new.RayDir = Raydetection.CastDirEnum[dir]
+
+    new.RayDir = dir
+    new:SetFromPart(part)
 
     new.Attachments = Raydetection._fillAttach(new.BasePart, attachVolume)
     --Method that is called every frame in :StartCast()
@@ -100,11 +101,14 @@ function Raydetection.newDirectional(part, dir, attachVolume)
     function new:_Cast()
         local result
 
-        local offset = self.RayDir * self.Length
-        local lookVector = self.FromPart.Position * offset
+        --local offset = self.CastDirEnum[self.RayDir] * self.Length
+        --local lookVector = self.FromPart.Position * offset
+        local lookVector = self.CastDirEnum[self.RayDir]
+        lookVector = Vector3.new(lookVector.X * self.Length, lookVector.Y * self.Length, lookVector.Z * self.Length) --JUST TO BE SAFE IDCARE ABOUT dir * length
 
         for i, attachment in pairs(self.Attachments) do
-            local dir = Vector3.new(lookVector.X, lookVector.Y, lookVector.Z)
+            --local dir = lookVector
+            local dir = lookVector
             local origin = attachment.WorldCFrame.Position
 
             local ray = workspace:Raycast(origin, dir, self.RayParams)
@@ -134,6 +138,7 @@ end
 
 
 function Raydetection:StartCast(frames, cleanOnCast)
+    self:SetFromPart(self.FromPart) --recalculating vectors
     if not self["_Cast"] then error("_Cast method not found!") end
     task.spawn(function()
         for i = frames, 0, -1 do
@@ -150,6 +155,18 @@ function Raydetection:StartCast(frames, cleanOnCast)
 
         self._eCastStopped:Fire()
     end)
+end
+
+function Raydetection:SetFromPart(part)
+    self.FromPart = part
+    self.CastDirEnum = {
+        ["Front"] = part.CFrame.LookVector,
+        ["Back"] = -(part.CFrame.LookVector),
+        ["Left"] = -(part.CFrame.RightVector),
+        ["Right"] = part.CFrame.RightVector,
+        ["Down"] = -(part.CFrame.UpVector),
+        ["Up"] = part.CFrame.UpVector
+    }
 end
 
 function Raydetection:Cleanup()
