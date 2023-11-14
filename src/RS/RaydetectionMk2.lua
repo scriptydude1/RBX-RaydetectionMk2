@@ -78,6 +78,9 @@ function Raydetection._new(part)
     new._eHit = Instance.new("BindableEvent")
     new.Hit = new._eHit.Event
 
+    new._eCastStopped = Instance.new("BindableEvent")
+    new.CastStopped = new._eCastStopped.Event
+
     return new
 end
 function Raydetection.newDirectional(part, dir, attachVolume)
@@ -144,6 +147,8 @@ function Raydetection:StartCast(frames, cleanOnCast)
         if cleanOnCast then
             self:Cleanup()
         end
+
+        self._eCastStopped:Fire()
     end)
 end
 

@@ -43,6 +43,7 @@ nil **`Raydetection:StartCast(Number frames, Bool cleanOnCast)` ASYNC**
  - `Length` [number] - Length of a ray.
  - `RayParams` [RaycastParams] - RaycastParams instance used for raycasting.
  - `Hit` [Event] (RaycastResult rayResult) - Event fires when raycast hits something.
+ - `CastStopped` [Event] () - Fires when :StartCast ends his job.
  
  *Directional only:*
  - `Attachments` [table, Instance] - Table of all attachments made by this Raydetection Instance
