@@ -31,11 +31,11 @@ Raydetection.CastDirEnum = {
 
 }
 --optimizes attachment placement.
-local function isSided(x, y, z)
+local function isSided(x, y, z, vectorSize)
     local side = false
     x, y, z = math.abs(x), math.abs(y), math.abs(z)
 
-    if x == 2 or y == 2 or z == 2 then
+    if x == vectorSize.X or y == vectorSize.Y or z == vectorSize.Z then
         side = true
     end
 
@@ -47,7 +47,8 @@ function Raydetection._fillAttach(part, volume)
     for x = (part.Size.X / 2) * -1, part.Size.X / 2, volume do
         for y = (part.Size.Y / 2) * -1, part.Size.Y / 2, volume do
             for z = (part.Size.Z / 2) * -1, part.Size.Z / 2, volume do
-                if isSided(x,y,z) then
+                local vectorSize = Vector3.new(part.Size.X / 2, part.Size.Y / 2, part.Size.Z / 2)
+                if isSided(x,y,z,vectorSize) then
                     local attachment = Instance.new("Attachment")
                     attachment.Name = "RD"
                     attachment.CFrame = CFrame.new(x, y, z)
@@ -96,16 +97,12 @@ function Raydetection.newDirectional(part, dir, attachVolume)
     new:SetFromPart(part)
 
     new.Attachments = Raydetection._fillAttach(new.BasePart, attachVolume)
-    --Method that is called every frame in :StartCast()
-    --Mainly for raycasting
+    
     function new:_Cast()
         local result
 
-        --local offset = self.CastDirEnum[self.RayDir] * self.Length
-        --local lookVector = self.FromPart.Position * offset
         local lookVector = self.CastDirEnum[self.RayDir]
-        lookVector = Vector3.new(lookVector.X * self.Length, lookVector.Y * self.Length, lookVector.Z * self.Length) --JUST TO BE SAFE IDCARE ABOUT dir * length
-
+        lookVector = Vector3.new(lookVector.X * self.Length, lookVector.Y * self.Length, lookVector.Z * self.Length) 
         for i, attachment in pairs(self.Attachments) do
             --local dir = lookVector
             local dir = lookVector
@@ -124,11 +121,11 @@ function Raydetection.newDirectional(part, dir, attachVolume)
     return new
 end
 --TODO
-function Raydetection.newOmnidirectional(part)
+function Raydetection.newOmnidirectional(part, attachVolume)
     local new = Raydetection._new(part)
 
-    --Method that is called every frame in :StartCast()
-    --Mainly for raycasting
+    new.Attachments = Raydetection._fillAttach(new.BasePart, attachVolume)
+    
     function new:_Cast() --TODO
         
     end
@@ -139,6 +136,7 @@ end
 
 function Raydetection:StartCast(frames, cleanOnCast)
     self:SetFromPart(self.FromPart) --recalculating vectors
+
     if not self["_Cast"] then error("_Cast method not found!") end
     task.spawn(function()
         for i = frames, 0, -1 do
