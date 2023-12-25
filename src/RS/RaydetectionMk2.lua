@@ -97,7 +97,7 @@ function Raydetection.newDirectional(part, dir, attachVolume)
     new:SetFromPart(part)
 
     new.Attachments = Raydetection._fillAttach(new.BasePart, attachVolume)
-    
+
     function new:_Cast()
         local result
 
@@ -120,14 +120,32 @@ function Raydetection.newDirectional(part, dir, attachVolume)
 
     return new
 end
---TODO
+
 function Raydetection.newOmnidirectional(part, attachVolume)
     local new = Raydetection._new(part)
 
     new.Attachments = Raydetection._fillAttach(new.BasePart, attachVolume)
+
+    new.RootAttachment = Instance.new("Attachment")
+    new.RootAttachment.Parent = part
+
+    table.insert(new.Attachments, new.RootAttachment)
     
-    function new:_Cast() --TODO
-        
+    function new:_Cast()
+        local result
+
+        for i, attachment in pairs(self.Attachments) do
+            local origin = self.RootAttachment.WorldCFrame.Position
+            local dir = Vector3.new(attachment.CFrame.Position.X * self.Length, attachment.CFrame.Position.Y * self.Length, attachment.CFrame.Position.Z * self.Length)
+            
+            local ray = workspace:Raycast(origin, dir, self.RayParams)
+            if ray then
+                visualRay(ray, origin, dir)
+                result = ray
+            end
+        end
+
+        return result
     end
 
     return new
@@ -135,7 +153,9 @@ end
 
 
 function Raydetection:StartCast(frames, cleanOnCast)
-    self:SetFromPart(self.FromPart) --recalculating vectors
+    if self.FromPart then
+        self:SetFromPart(self.FromPart)
+    end
 
     if not self["_Cast"] then error("_Cast method not found!") end
     task.spawn(function()
