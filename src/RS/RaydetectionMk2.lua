@@ -1,22 +1,5 @@
 local RunService = game:GetService("RunService")
 
-local function visualRay(result, origin, dir)
-	--Credits to Ducky_akaDirt
-	local distance = (origin - result.Position).Magnitude
-	local p = Instance.new("Part")
-	p.Parent = workspace
-	p.Anchored = true
-	p.CanCollide = false
-	p.Color = Color3.new(1, 0, 0.0156863)
-	p.Transparency = 0.75
-	p.Size = Vector3.new(0.1, 0.1, distance)
-    p.CFrame = CFrame.lookAt(origin, result.Position)*CFrame.new(0, 0, -distance/2)
-	
-	task.delay(0.5, function()
-        p:Destroy()
-    end)
-end
-
 local Raydetection = {}
 Raydetection.__index = Raydetection
 
@@ -110,7 +93,7 @@ function Raydetection.newDirectional(part, dir, attachVolume)
 
             local ray = workspace:Raycast(origin, dir, self.RayParams)
             if ray then
-                visualRay(ray, origin, dir)
+                --visualRay(ray, origin, dir)
                 result = ray
             end
         end
@@ -140,7 +123,7 @@ function Raydetection.newOmnidirectional(part, attachVolume)
             
             local ray = workspace:Raycast(origin, dir, self.RayParams)
             if ray then
-                visualRay(ray, origin, dir)
+                --visualRay(ray, origin, dir)
                 result = ray
             end
         end
